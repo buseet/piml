@@ -142,18 +142,8 @@ Whenever possible, compare PINN predictions with:
 - Reduce collocation points (but check physics satisfaction)
 - Consider domain decomposition for large problems
 
-## Contributing Notebooks
-
-Have a tutorial to share? Notebook contributions are welcome!
-
-## Companion Resources
-
-- **[Fundamentals](../docs/fundamentals/)**: Conceptual background before coding
-- **[Guides](../docs/guides/)**: Written tutorials for deeper dives
-- **[Examples](../examples/)**: Standalone Python scripts
-- **[Literature Review](../docs/literature-review/)**: Theory and papers
-
 ---
+**Contributing Notebooks**: Have a tutorial to share? Notebook contributions are welcome!
 
 **Current Status**: Structure established, notebooks in development. Check back for updates as notebooks are added!
 
