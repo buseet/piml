@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIML Method Selector - Interactive Decision Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .option-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .option-btn:active {
+            transform: translateY(-2px);
+        }
+
+        .method-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-left: 5px solid #667eea;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .method-title {
+            font-size: 1.8em;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .method-description {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .method-section {
+            margin: 20px 0;
+        }
+
+        .method-section h3 {
+            color: #764ba2;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .method-section ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #48bb78;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+
+        .back-btn {
+            background: #718096;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #4a5568;
+            transform: translateX(-5px);
+        }
+
+        .reset-btn {
+            background: #f56565;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-left: 10px;
+            transition: all 0.3s;
+        }
+
+        .reset-btn:hover {
+            background: #c53030;
+        }
+
+        .progress {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin: 5px 5px 5px 0;
+        }
+
+        .warning {
+            background: #fff5f5;
+            border-left: 5px solid #f56565;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+
+        .success {
+            background: #f0fff4;
+            border-left: 5px solid #48bb78;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>PIML Method Selector</h1>
+            <p class="subtitle">Interactive Decision Tool for Mineral Resources & Beyond</p>
+        </header>
+
+        <div id="progress" class="progress" style="display: none;">
+            <span id="progress-text">Progress:</span>
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div id="content" class="card">
+            <!-- Content will be dynamically loaded here -->
+        </div>
+    </div>
+
+    <script>
+        // Decision tree data structure
+        const decisionTree = {
+            start: {
+                question: "What type of problem are you trying to solve?",
+                progress: 25,
+                options: [
+                    { text: "Forward Problem (Given inputs → predict outputs)", next: "forward" },
+                    { text: "Inverse Problem (Given observations → infer hidden parameters)", next: "inverse" },
+                    { text: "Discover Unknown Equations from Data", next: "discovery" },
+                    { text: "Optimization / Control Problem", next: "optimization" }
+                ]
+            },
+
+            forward: {
+                question: "How much data do you have?",
+                progress: 50,
+                options: [
+                    { text: "Sparse (<100 samples) - Need physics to compensate", next: "forward_sparse" },
+                    { text: "Moderate (100-10k samples) - Good balance", next: "forward_moderate" },
+                    { text: "Abundant (>10k samples) - Rich dataset", next: "forward_abundant" }
+                ]
+            },
+
+            forward_sparse: {
+                question: "Do you need uncertainty quantification?",
+                progress: 75,
+                options: [
+                    { text: "Yes - Uncertainty is critical", next: "method_bayesian_pinn" },
+                    { text: "No - Point predictions are sufficient", next: "method_standard_pinn" }
+                ]
+            },
+
+            forward_moderate: {
+                question: "What's your priority?",
+                progress: 75,
+                options: [
+                    { text: "Fast real-time predictions after training", next: "method_neural_operator" },
+                    { text: "Accuracy with physics guarantees", next: "method_standard_pinn" },
+                    { text: "Uncertainty quantification", next: "method_bayesian_pinn" }
+                ]
+            },
+
+            forward_abundant: {
+                question: "Do you know the physics equations well?",
+                progress: 75,
+                options: [
+                    { text: "Yes - Exact physics known", next: "method_neural_operator" },
+                    { text: "Partially - Some physics understanding", next: "method_hybrid" },
+                    { text: "No - Mostly data-driven", next: "method_pure_ml" }
+                ]
+            },
+
+            inverse: {
+                question: "What type of observations do you have?",
+                progress: 50,
+                options: [
+                    { text: "Sparse point measurements (e.g., drill holes)", next: "inverse_sparse" },
+                    { text: "Image/spatial field data", next: "inverse_image" },
+                    { text: "Time series or sequential data", next: "inverse_timeseries" },
+                    { text: "Multi-fidelity (cheap simulations + expensive real data)", next: "method_multifidelity" }
+                ]
+            },
+
+            inverse_sparse: {
+                question: "Is uncertainty quantification critical?",
+                progress: 75,
+                options: [
+                    { text: "Yes - Need confidence intervals for decisions", next: "method_pigp" },
+                    { text: "Helpful but not critical", next: "method_pinn_inverse" },
+                    { text: "No - Just need best estimate", next: "method_pinn_inverse" }
+                ]
+            },
+
+            inverse_image: {
+                question: "Do you have physics equations for the forward problem?",
+                progress: 75,
+                options: [
+                    { text: "Yes - Know forward model equations", next: "method_physics_cnn" },
+                    { text: "Partially - Approximate physics", next: "method_hybrid" },
+                    { text: "No - Purely data-driven", next: "method_pure_ml" }
+                ]
+            },
+
+            inverse_timeseries: {
+                question: "What's your data situation?",
+                progress: 75,
+                options: [
+                    { text: "Continuous measurements, know physics", next: "method_neural_ode" },
+                    { text: "Sparse irregular observations", next: "method_pigp" },
+                    { text: "Rich temporal data", next: "method_hybrid" }
+                ]
+            },
+
+            discovery: {
+                type: "method",
+                method: "equation_discovery"
+            },
+
+            optimization: {
+                type: "method",
+                method: "differentiable_physics"
+            },
+
+            // Method endpoints
+            method_standard_pinn: { type: "method", method: "standard_pinn" },
+            method_bayesian_pinn: { type: "method", method: "bayesian_pinn" },
+            method_neural_operator: { type: "method", method: "neural_operator" },
+            method_hybrid: { type: "method", method: "hybrid" },
+            method_pure_ml: { type: "method", method: "pure_ml" },
+            method_pigp: { type: "method", method: "pigp" },
+            method_pinn_inverse: { type: "method", method: "pinn_inverse" },
+            method_physics_cnn: { type: "method", method: "physics_cnn" },
+            method_neural_ode: { type: "method", method: "neural_ode" },
+            method_multifidelity: { type: "method", method: "multifidelity" },
+            method_equation_discovery: { type: "method", method: "equation_discovery" },
+            method_differentiable_physics: { type: "method", method: "differentiable_physics" }
+        };
+
+        // Method details
+        const methods = {
+            standard_pinn: {
+                name: "Physics-Informed Neural Networks (PINNs)",
+                description: "Neural networks trained with physics equations as constraints. Ideal when you have limited data but strong physics knowledge.",
+                when_to_use: [
+                    "Sparse to moderate data (<10k samples)",
+                    "Known governing PDEs or physical laws",
+                    "Need to satisfy physics exactly",
+                    "Forward or inverse problems"
+                ],
+                pros: [
+                    "Works with sparse data",
+                    "Enforces physics constraints",
+                    "No need for labeled physics data",
+                    "Mesh-free solution"
+                ],
+                cons: [
+                    "Training can be slow",
+                    "Requires knowledge of physics equations",
+                    "Can be sensitive to hyperparameters",
+                    "No built-in uncertainty quantification"
+                ],
+                mining_example: "Groundwater Flow Modeling",
+                example_desc: "Model subsurface water flow using Darcy's law with sparse well measurements.",
+                code: `# Standard PINN for groundwater flow
+import torch
+import torch.nn as nn
+
+class GroundwaterPINN(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(2, 50), nn.Tanh(),
+            nn.Linear(50, 50), nn.Tanh(),
+            nn.Linear(50, 1)  # Hydraulic head
+        )
+
+    def forward(self, x, y):
+        return self.net(torch.cat([x, y], dim=1))
+
+# Physics loss (Darcy's law: ∇²h = 0)
+def physics_loss(model, x, y):
+    h = model(x, y)
+    h_x = torch.autograd.grad(h.sum(), x, create_graph=True)[0]
+    h_y = torch.autograd.grad(h.sum(), y, create_graph=True)[0]
+    h_xx = torch.autograd.grad(h_x.sum(), x, create_graph=True)[0]
+    h_yy = torch.autograd.grad(h_y.sum(), y, create_graph=True)[0]
+    laplacian = h_xx + h_yy
+    return (laplacian ** 2).mean()
+
+# Total loss = data loss + physics loss
+total_loss = data_loss + lambda_physics * physics_loss`,
+                tools: ["DeepXDE", "PyTorch", "TensorFlow", "NVIDIA Modulus"]
+            },
+
+            bayesian_pinn: {
+                name: "Bayesian Physics-Informed Neural Networks",
+                description: "PINNs with uncertainty quantification through Bayesian inference. Essential when decisions depend on confidence levels.",
+                when_to_use: [
+                    "Sparse noisy data",
+                    "Uncertainty is critical for decision-making",
+                    "Risk assessment needed",
+                    "Safety-critical applications"
+                ],
+                pros: [
+                    "Built-in uncertainty quantification",
+                    "Confidence intervals on predictions",
+                    "Robust to noise",
+                    "Principled handling of sparse data"
+                ],
+                cons: [
+                    "Computationally expensive",
+                    "More complex to implement",
+                    "Requires understanding of Bayesian methods",
+                    "Longer training time"
+                ],
+                mining_example: "Ore Grade Estimation with Uncertainty",
+                example_desc: "Estimate gold grade distribution with confidence bounds for mine planning risk assessment.",
+                code: `# Bayesian PINN using variational inference
+import torch
+import torch.nn as nn
+from torch.distributions import Normal
+
+class BayesianLayer(nn.Module):
+    def __init__(self, in_features, out_features):
+        super().__init__()
+        # Weight posterior parameters
+        self.w_mu = nn.Parameter(torch.randn(in_features, out_features) * 0.1)
+        self.w_logsigma = nn.Parameter(torch.randn(in_features, out_features) * 0.1)
+
+    def forward(self, x):
+        # Sample weights from posterior
+        w = self.w_mu + torch.exp(self.w_logsigma) * torch.randn_like(self.w_mu)
+        return x @ w
+
+# KL divergence for variational inference
+def kl_divergence(model):
+    kl = 0
+    for layer in model.bayesian_layers:
+        # KL(q(w) || p(w))
+        kl += (layer.w_logsigma.exp() + layer.w_mu**2 - 1 - layer.w_logsigma).sum()
+    return 0.5 * kl
+
+# ELBO loss = data_loss + physics_loss + KL
+loss = data_loss + physics_loss + beta * kl_divergence(model)
+
+# Prediction with uncertainty (MC sampling)
+predictions = [model(x) for _ in range(100)]
+mean = torch.stack(predictions).mean(0)
+std = torch.stack(predictions).std(0)`,
+                tools: ["Pyro", "NumPyro", "TensorFlow Probability", "Custom PyTorch"]
+            },
+
+            neural_operator: {
+                name: "Neural Operators (FNO, DeepONet)",
+                description: "Learn operators mapping between function spaces, not just point evaluations. Ultra-fast inference for parametric PDEs.",
+                when_to_use: [
+                    "Need fast predictions for many scenarios",
+                    "Parametric PDE problems",
+                    "Real-time applications",
+                    "Many forward solves needed (e.g., optimization)"
+                ],
+                pros: [
+                    "Extremely fast inference (1000x+ speedup)",
+                    "Resolution-independent",
+                    "Generalizes across parameters",
+                    "Amortized cost over many evaluations"
+                ],
+                cons: [
+                    "Requires substantial training data",
+                    "Expensive upfront training",
+                    "Need simulation data or expensive measurements",
+                    "Less interpretable than PINNs"
+                ],
+                mining_example: "Real-time Blast Fragmentation Prediction",
+                example_desc: "Predict rock fragmentation patterns for different explosive configurations in real-time.",
+                code: `# DeepONet for parametric blast modeling
+import torch
+import torch.nn as nn
+
+class DeepONet(nn.Module):
+    def __init__(self):
+        super().__init__()
+        # Branch network: encodes input function (explosive config)
+        self.branch = nn.Sequential(
+            nn.Linear(100, 128), nn.ReLU(),
+            nn.Linear(128, 128), nn.ReLU(),
+            nn.Linear(128, 128)
+        )
+        # Trunk network: encodes query points (spatial locations)
+        self.trunk = nn.Sequential(
+            nn.Linear(3, 128), nn.ReLU(),  # x, y, z
+            nn.Linear(128, 128), nn.ReLU(),
+            nn.Linear(128, 128)
+        )
+
+    def forward(self, explosive_config, query_points):
+        # Branch: encode explosive configuration
+        branch_out = self.branch(explosive_config)  # (batch, 128)
+        # Trunk: encode query locations
+        trunk_out = self.trunk(query_points)  # (n_points, 128)
+        # Inner product to get solution at query points
+        output = torch.einsum('bi,ni->bn', branch_out, trunk_out)
+        return output  # Fragmentation at query points
+
+# Train on many simulations with different configs
+# Inference: 1000x faster than running simulation`,
+                tools: ["neuraloperator", "DeepXDE", "NVIDIA Modulus"]
+            },
+
+            pigp: {
+                name: "Physics-Informed Gaussian Processes (PIGPs)",
+                description: "Gaussian processes with physics constraints encoded in the kernel or as linear constraints. Perfect for sparse data with uncertainty.",
+                when_to_use: [
+                    "Very sparse data (<100 points)",
+                    "Spatial interpolation needed",
+                    "Uncertainty quantification critical",
+                    "Known spatial correlations"
+                ],
+                pros: [
+                    "Excellent for sparse data",
+                    "Natural uncertainty quantification",
+                    "Well-calibrated confidence intervals",
+                    "Incorporates prior knowledge easily"
+                ],
+                cons: [
+                    "Scales poorly to large data (O(n³))",
+                    "Requires careful kernel selection",
+                    "Can be memory-intensive",
+                    "Limited to relatively simple physics"
+                ],
+                mining_example: "Ore Grade Estimation from Drill Holes",
+                example_desc: "Interpolate ore grades across 3D volume from sparse drill hole samples with uncertainty.",
+                code: `# PIGP for ore grade estimation
+import gpytorch
+import torch
+
+class OreGradeGP(gpytorch.models.ExactGP):
+    def __init__(self, train_x, train_y, likelihood):
+        super().__init__(train_x, train_y, likelihood)
+        # Mean: constant or trend
+        self.mean = gpytorch.means.ConstantMean()
+        # Covariance: Matérn kernel (geological smoothness)
+        self.covar = gpytorch.kernels.ScaleKernel(
+            gpytorch.kernels.MaternKernel(nu=1.5)
+        )
+
+    def forward(self, x):
+        mean = self.mean(x)
+        covar = self.covar(x)
+        return gpytorch.distributions.MultivariateNormal(mean, covar)
+
+# Training
+likelihood = gpytorch.likelihoods.GaussianLikelihood()
+model = OreGradeGP(drill_hole_locations, ore_grades, likelihood)
+model.train()
+optimizer = torch.optim.Adam(model.parameters(), lr=0.1)
+
+# Prediction with uncertainty
+model.eval()
+with torch.no_grad():
+    pred = model(test_locations)
+    mean = pred.mean  # Predicted grades
+    std = pred.stddev  # Uncertainty (for risk assessment)`,
+                tools: ["GPyTorch", "GPflow", "scikit-learn"]
+            },
+
+            hybrid: {
+                name: "Hybrid Physics-Data Models",
+                description: "Combine physics-based models with data-driven corrections. Most practical for real-world problems with imperfect physics.",
+                when_to_use: [
+                    "Physics is approximate or incomplete",
+                    "Have both physics knowledge and data",
+                    "Want interpretability + flexibility",
+                    "Practical industrial applications"
+                ],
+                pros: [
+                    "Best of both worlds",
+                    "More robust than pure ML",
+                    "More flexible than pure physics",
+                    "Easier to validate and trust"
+                ],
+                cons: [
+                    "Requires both physics and data expertise",
+                    "Design choices less standardized",
+                    "May need careful balancing",
+                    "Can be problem-specific"
+                ],
+                mining_example: "Rock Fragmentation Prediction",
+                example_desc: "Combine Kuz-Ram empirical model with neural network corrections from blast data.",
+                code: `# Hybrid fragmentation model
+import torch
+import torch.nn as nn
+
+def kuzram_model(rock_props, explosive_props):
+    """Physics-based Kuz-Ram fragmentation model"""
+    # Simplified Kuz-Ram empirical equations
+    A = rock_props['factor']
+    Q = explosive_props['charge_mass']
+    fragmentation = A * (Q ** 0.8)  # Empirical formula
+    return fragmentation
+
+class HybridFragmentation(nn.Module):
+    def __init__(self):
+        super().__init__()
+        # Neural network for residual/correction
+        self.correction_net = nn.Sequential(
+            nn.Linear(10, 50), nn.ReLU(),
+            nn.Linear(50, 50), nn.ReLU(),
+            nn.Linear(50, 1)
+        )
+
+    def forward(self, rock_props, explosive_props, features):
+        # Physics baseline
+        physics_pred = kuzram_model(rock_props, explosive_props)
+        # Data-driven correction
+        correction = self.correction_net(features)
+        # Hybrid prediction
+        return physics_pred + correction
+
+# Train only the correction network
+# Physics provides structure, data corrects imperfections`,
+                tools: ["PyTorch", "TensorFlow", "Custom implementations"]
+            },
+
+            pinn_inverse: {
+                name: "PINNs for Inverse Problems",
+                description: "Use PINNs to solve inverse problems by treating unknown parameters as learnable variables along with the solution.",
+                when_to_use: [
+                    "Need to infer hidden parameters",
+                    "Know forward physics equations",
+                    "Have observation data",
+                    "Moderate data availability"
+                ],
+                pros: [
+                    "Unified framework for forward + inverse",
+                    "No need for adjoint equations",
+                    "Can handle multiple unknowns",
+                    "Mesh-free"
+                ],
+                cons: [
+                    "Can be ill-posed",
+                    "May need regularization",
+                    "No automatic uncertainty",
+                    "Requires careful initialization"
+                ],
+                mining_example: "Permeability Inversion from Pressure",
+                example_desc: "Infer subsurface permeability distribution from pressure measurements.",
+                code: `# PINN for inverse permeability estimation
+import torch
+import torch.nn as nn
+
+class InversePINN(nn.Module):
+    def __init__(self):
+        super().__init__()
+        # Network for pressure field
+        self.pressure_net = nn.Sequential(
+            nn.Linear(3, 50), nn.Tanh(),
+            nn.Linear(50, 50), nn.Tanh(),
+            nn.Linear(50, 1)
+        )
+        # Network for unknown permeability field
+        self.permeability_net = nn.Sequential(
+            nn.Linear(3, 50), nn.Tanh(),
+            nn.Linear(50, 50), nn.Tanh(),
+            nn.Linear(50, 1), nn.Softplus()  # Ensure positive
+        )
+
+    def forward(self, x, y, z):
+        coords = torch.cat([x, y, z], dim=1)
+        p = self.pressure_net(coords)
+        k = self.permeability_net(coords)
+        return p, k
+
+# Physics loss: ∇·(k∇p) = 0 (flow equation)
+# Data loss: match observed pressures
+# Both pressure and permeability are learned`,
+                tools: ["DeepXDE", "Custom PyTorch/TensorFlow"]
+            },
+
+            physics_cnn: {
+                name: "Physics-Informed CNNs for Images",
+                description: "Convolutional neural networks with physics constraints for image-to-physics inverse problems.",
+                when_to_use: [
+                    "Input is imagery (satellite, aerial, etc.)",
+                    "Need to extract physical fields from images",
+                    "Know forward physics relating images to fields",
+                    "Have some training image-field pairs"
+                ],
+                pros: [
+                    "Leverages spatial structure",
+                    "Can handle high-resolution imagery",
+                    "End-to-end learning",
+                    "Physics ensures consistency"
+                ],
+                cons: [
+                    "Needs image-field training pairs",
+                    "Can be data-hungry",
+                    "Physics constraints can be tricky",
+                    "May need multi-scale approach"
+                ],
+                mining_example: "Mineral Mapping from Hyperspectral",
+                example_desc: "Extract mineral abundances from hyperspectral imagery using spectral physics.",
+                code: `# Physics-informed CNN for mineral mapping
+import torch
+import torch.nn as nn
+
+class MineralMapCNN(nn.Module):
+    def __init__(self, n_bands, n_minerals):
+        super().__init__()
+        # Encoder: imagery → features
+        self.encoder = nn.Sequential(
+            nn.Conv2d(n_bands, 64, 3, padding=1), nn.ReLU(),
+            nn.Conv2d(64, 128, 3, padding=1), nn.ReLU(),
+            nn.Conv2d(128, n_minerals, 1)  # Mineral abundances
+        )
+        # Physics: known mineral spectra
+        self.mineral_spectra = nn.Parameter(
+            torch.randn(n_minerals, n_bands), requires_grad=False
+        )
+
+    def forward(self, hyperspectral_image):
+        # Predict mineral abundances
+        abundances = self.encoder(hyperspectral_image)  # (B, M, H, W)
+        return abundances
+
+    def physics_loss(self, abundances, observed_spectra):
+        # Forward model: spectra = abundances @ mineral_spectra
+        predicted_spectra = torch.einsum('bmhw,mb->bhw', abundances, self.mineral_spectra)
+        # Physics consistency
+        return ((predicted_spectra - observed_spectra) ** 2).mean()
+
+# Total loss = reconstruction + physics + regularization`,
+                tools: ["PyTorch", "TensorFlow", "Custom implementations"]
+            },
+
+            neural_ode: {
+                name: "Neural ODEs / Physics-Informed RNNs",
+                description: "Neural networks for time-series with physics constraints encoded as differential equations.",
+                when_to_use: [
+                    "Time-series or temporal dynamics",
+                    "Know governing ODEs/dynamics",
+                    "Sequential predictions needed",
+                    "Continuous-time modeling"
+                ],
+                pros: [
+                    "Handles irregular time sampling",
+                    "Memory efficient",
+                    "Continuous-time representation",
+                    "Physics ensures stability"
+                ],
+                cons: [
+                    "Can be slow to train",
+                    "Requires ODE solver",
+                    "Hyperparameter sensitive",
+                    "Complex gradient computation"
+                ],
+                mining_example: "Equipment Degradation Prediction",
+                example_desc: "Model equipment health degradation over time using physics-based wear models.",
+                code: `# Neural ODE for equipment degradation
+import torch
+import torch.nn as nn
+from torchdiffeq import odeint
+
+class DegradationODE(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(2, 50), nn.Tanh(),
+            nn.Linear(50, 50), nn.Tanh(),
+            nn.Linear(50, 1)
+        )
+
+    def forward(self, t, state):
+        # state = [health, cumulative_stress]
+        # dhealth/dt = f(health, stress)
+        health = state[:, 0:1]
+        stress = state[:, 1:2]
+        dhdt = self.net(torch.cat([health, stress], dim=1))
+        dsdt = torch.ones_like(stress) * 0.1  # Stress accumulation
+        return torch.cat([dhdt, dsdt], dim=1)
+
+# Solve ODE forward in time
+model = DegradationODE()
+initial_state = torch.tensor([[1.0, 0.0]])  # Healthy, no stress
+t = torch.linspace(0, 100, 100)  # Time points
+trajectory = odeint(model, initial_state, t)
+
+# Train by matching observed degradation measurements`,
+                tools: ["torchdiffeq", "DiffEqFlux.jl (Julia)", "Custom implementations"]
+            },
+
+            multifidelity: {
+                name: "Multi-Fidelity Learning",
+                description: "Combine cheap low-fidelity simulations with expensive high-fidelity data for optimal resource allocation.",
+                when_to_use: [
+                    "Have cheap simulations + expensive real data",
+                    "Different resolution or accuracy levels",
+                    "Limited budget for expensive measurements",
+                    "Want to leverage all available information"
+                ],
+                pros: [
+                    "Optimal use of resources",
+                    "Leverages cheap data effectively",
+                    "Reduces expensive measurements needed",
+                    "Improves predictions"
+                ],
+                cons: [
+                    "Requires data at multiple fidelities",
+                    "More complex modeling",
+                    "Fidelity relationship must be learned",
+                    "Can be problem-specific"
+                ],
+                mining_example: "Blast Outcome Prediction",
+                example_desc: "Combine cheap blast simulations with expensive field measurements for accurate fragmentation prediction.",
+                code: `# Multi-fidelity GP for blast prediction
+import gpytorch
+import torch
+
+class MultiFidelityGP(gpytorch.models.ExactGP):
+    def __init__(self, train_x, train_y, train_fidelity, likelihood):
+        super().__init__(train_x, train_y, likelihood)
+        self.mean = gpytorch.means.ConstantMean()
+        # Kernel for spatial correlation
+        self.spatial_kernel = gpytorch.kernels.MaternKernel()
+        # Kernel for fidelity correlation
+        self.fidelity_kernel = gpytorch.kernels.IndexKernel(num_tasks=2)
+        # Combined kernel
+        self.covar = gpytorch.kernels.ScaleKernel(
+            self.spatial_kernel * self.fidelity_kernel
+        )
+
+    def forward(self, x, fidelity_idx):
+        mean = self.mean(x)
+        covar = self.covar(x, fidelity_idx)
+        return gpytorch.distributions.MultivariateNormal(mean, covar)
+
+# Train on:
+# - Many cheap simulations (fidelity 0)
+# - Few expensive real measurements (fidelity 1)
+# Model learns: low_fidelity → high_fidelity correction`,
+                tools: ["GPyTorch", "emukit", "Custom implementations"]
+            },
+
+            equation_discovery: {
+                name: "Equation Discovery (SINDy, Symbolic)",
+                description: "Discover governing equations from data when physics is unknown. Learn interpretable symbolic expressions.",
+                when_to_use: [
+                    "Unknown governing equations",
+                    "Want interpretable models",
+                    "Have time-series or trajectory data",
+                    "Need symbolic expressions"
+                ],
+                pros: [
+                    "Discovers interpretable equations",
+                    "No prior physics knowledge needed",
+                    "Compact representations",
+                    "Generalizes well if sparse"
+                ],
+                cons: [
+                    "Requires good data quality",
+                    "May need derivatives",
+                    "Can be sensitive to noise",
+                    "Limited to relatively simple systems"
+                ],
+                mining_example: "Discover Mineral Processing Kinetics",
+                example_desc: "Learn reaction rate equations from flotation cell measurements.",
+                code: `# SINDy for equation discovery
+import numpy as np
+from pysindy import SINDy
+from sklearn.linear_model import Lasso
+
+# Candidate library: [1, x, x², x³, sin(x), ...]
+def build_library(x):
+    return np.column_stack([
+        x,
+        x**2,
+        x**3,
+        np.sin(x),
+        np.cos(x),
+        x[:, 0] * x[:, 1],  # Interactions
+    ])
+
+# SINDy: sparse regression to find active terms
+model = SINDy(
+    optimizer=Lasso(alpha=0.01),
+    feature_library=build_library
+)
+
+# Fit to time-series data
+model.fit(X, t=dt)
+
+# Discovered equation (symbolic)
+model.print()
+# Output example:
+# dx/dt = -0.5 * x + 0.3 * x²
+# (Interpretable rate equation discovered!)
+
+# Use discovered equation for prediction`,
+                tools: ["PySINDy", "AI Feynman", "Eureqa", "SymPy"]
+            },
+
+            differentiable_physics: {
+                name: "Differentiable Physics Programming",
+                description: "Embed physics simulators in differentiable frameworks to enable gradient-based optimization and learning.",
+                when_to_use: [
+                    "Optimization or control problems",
+                    "Inverse design",
+                    "Have physics simulator",
+                    "Need end-to-end gradients"
+                ],
+                pros: [
+                    "Enables gradient-based optimization",
+                    "End-to-end learning",
+                    "Leverages existing simulators",
+                    "Powerful for design problems"
+                ],
+                cons: [
+                    "Requires differentiable simulator",
+                    "Can be memory-intensive",
+                    "Complex implementation",
+                    "Gradient computation can be slow"
+                ],
+                mining_example: "Optimal Blast Pattern Design",
+                example_desc: "Find optimal explosive placement to achieve target fragmentation distribution.",
+                code: `# Differentiable blast optimization
+import jax
+import jax.numpy as jnp
+from jax import grad, jit
+
+def blast_simulator(explosive_positions, rock_properties):
+    """Differentiable blast simulation"""
+    # Simplified differentiable physics
+    energy_distribution = compute_energy_field(explosive_positions)
+    fragmentation = rock_fragmentation(energy_distribution, rock_properties)
+    return fragmentation
+
+def target_loss(explosive_positions, rock_properties, target_fragmentation):
+    """Loss: difference from target fragmentation"""
+    predicted = blast_simulator(explosive_positions, rock_properties)
+    return jnp.sum((predicted - target_fragmentation) ** 2)
+
+# Gradient-based optimization
+grad_fn = jit(grad(target_loss, argnums=0))
+
+# Optimize explosive positions
+positions = jnp.array([[0, 0], [1, 0], [0, 1]])  # Initial
+for step in range(1000):
+    gradient = grad_fn(positions, rock_props, target)
+    positions = positions - 0.01 * gradient  # Gradient descent
+
+# Result: Optimal explosive placement`,
+                tools: ["JAX", "PyTorch", "TensorFlow", "Taichi"]
+            },
+
+            pure_ml: {
+                name: "Pure Machine Learning (No Physics)",
+                description: "Standard ML approaches when physics is unknown or data is abundant. Physics-informed methods may be overkill.",
+                when_to_use: [
+                    "Abundant training data (>10k samples)",
+                    "Unknown or very complex physics",
+                    "Problem is primarily statistical",
+                    "Fast prototyping needed"
+                ],
+                pros: [
+                    "Well-established tools",
+                    "Abundant resources/tutorials",
+                    "Fast to prototype",
+                    "Works well with lots of data"
+                ],
+                cons: [
+                    "Data-hungry",
+                    "May violate physics",
+                    "Poor extrapolation",
+                    "Black-box"
+                ],
+                mining_example: "Image-based Mineral Classification",
+                example_desc: "Classify ore types from drill core images using CNN.",
+                code: `# Standard CNN for ore classification
+import torch
+import torch.nn as nn
+
+class OreClassifier(nn.Module):
+    def __init__(self, num_classes):
+        super().__init__()
+        self.features = nn.Sequential(
+            nn.Conv2d(3, 64, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),
+            nn.Conv2d(64, 128, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),
+            nn.Conv2d(128, 256, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2),
+        )
+        self.classifier = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(256 * 28 * 28, 512), nn.ReLU(), nn.Dropout(0.5),
+            nn.Linear(512, num_classes)
+        )
+
+    def forward(self, x):
+        x = self.features(x)
+        x = self.classifier(x)
+        return x
+
+# Standard supervised learning
+# No physics - purely data-driven pattern recognition`,
+                tools: ["PyTorch", "TensorFlow", "scikit-learn", "XGBoost"]
+            }
+        };
+
+        // Navigation history
+        let history = [];
+        let currentNode = "start";
+
+        function updateProgress(percentage) {
+            const progressDiv = document.getElementById("progress");
+            const progressFill = document.getElementById("progress-fill");
+            const progressText = document.getElementById("progress-text");
+
+            if (percentage > 0) {
+                progressDiv.style.display = "flex";
+                progressFill.style.width = percentage + "%";
+                progressText.textContent = `Progress: ${percentage}%`;
+            } else {
+                progressDiv.style.display = "none";
+            }
+        }
+
+        function renderQuestion(nodeKey) {
+            const node = decisionTree[nodeKey];
+            const content = document.getElementById("content");
+
+            updateProgress(node.progress || 0);
+
+            let html = `
+                <div class="question">${node.question}</div>
+                <div class="options">
+            `;
+
+            node.options.forEach((option, index) => {
+                html += `
+                    <button class="option-btn" onclick="selectOption('${option.next}')">
+                        ${option.text}
+                    </button>
+                `;
+            });
+
+            html += `</div>`;
+
+            if (history.length > 0) {
+                html += `<button class="back-btn" onclick="goBack()">← Back</button>`;
+            }
+            html += `<button class="reset-btn" onclick="reset()">Reset</button>`;
+
+            content.innerHTML = html;
+        }
+
+        function renderMethod(methodKey) {
+            const method = methods[methodKey];
+            const content = document.getElementById("content");
+
+            updateProgress(100);
+
+            let html = `
+                <div class="method-card">
+                    <div class="method-title">${method.name}</div>
+                    <div class="method-description">${method.description}</div>
+
+                    <div class="success">
+                        <strong>Recommended Method:</strong> Based on your answers, this approach fits your problem well!
+                    </div>
+
+                    <div class="method-section">
+                        <h3>When to Use</h3>
+                        <ul>
+                            ${method.when_to_use.map(item => `<li>${item}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <div class="method-section">
+                        <h3>Pros & Cons</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div>
+                                <h4 style="color: #48bb78;">✓ Pros</h4>
+                                <ul>
+                                    ${method.pros.map(item => `<li>${item}</li>`).join('')}
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 style="color: #f56565;">✗ Cons</h4>
+                                <ul>
+                                    ${method.cons.map(item => `<li>${item}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="method-section">
+                        <h3>Mining/Resources Example</h3>
+                        <div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                            <strong>${method.mining_example}</strong><br>
+                            ${method.example_desc}
+                        </div>
+                    </div>
+
+                    <div class="method-section">
+                        <h3>Implementation Example</h3>
+                        <div class="code-block">${escapeHtml(method.code)}</div>
+                    </div>
+
+                    <div class="method-section">
+                        <h3>Recommended Tools</h3>
+                        <div>
+                            ${method.tools.map(tool => `<span class="tag">${tool}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>
+
+                <button class="back-btn" onclick="goBack()">← Try Different Options</button>
+                <button class="reset-btn" onclick="reset()">Start Over</button>
+            `;
+
+            content.innerHTML = html;
+        }
+
+        function selectOption(nextKey) {
+            history.push(currentNode);
+            currentNode = nextKey;
+
+            const nextNode = decisionTree[nextKey];
+
+            if (nextNode.type === "method") {
+                renderMethod(nextNode.method);
+            } else {
+                renderQuestion(nextKey);
+            }
+        }
+
+        function goBack() {
+            if (history.length > 0) {
+                currentNode = history.pop();
+                renderQuestion(currentNode);
+            }
+        }
+
+        function reset() {
+            history = [];
+            currentNode = "start";
+            renderQuestion("start");
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initialize
+        renderQuestion("start");
+    </script>
+</body>
+</html>
