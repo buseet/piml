@@ -126,17 +126,6 @@
             line-height: 1.8;
         }
 
-        .code-block {
-            background: #2d3748;
-            color: #48bb78;
-            padding: 15px;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-            overflow-x: auto;
-            margin: 10px 0;
-        }
-
         .back-btn {
             background: #718096;
             color: white;
@@ -230,9 +219,18 @@
             }
         }
     </style>
+<link
+rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.5.0/themes/prism.min.css"
+/>
 </head>
 <body>
-    <div class="container">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.17.1/prism.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.17.1/components/prism-python.min.js"></script>
+
+
+	<div class="container">
         <header>
             <h1>PIML Method Selector</h1>
             <p class="subtitle">Interactive Decision Tool for Mineral Resources & Beyond</p>
@@ -1134,7 +1132,7 @@ class OreClassifier(nn.Module):
 
                     <div class="method-section">
                         <h3>Implementation Example</h3>
-                        <div class="code-block">${escapeHtml(method.code)}</div>
+			<pre><code class="language-python">${method.code}</code></pre>
                     </div>
 
                     <div class="method-section">
@@ -1150,6 +1148,7 @@ class OreClassifier(nn.Module):
             `;
 
             content.innerHTML = html;
+	        Prism.highlightAll();
         }
 
         function selectOption(nextKey) {
@@ -1176,12 +1175,6 @@ class OreClassifier(nn.Module):
             history = [];
             currentNode = "start";
             renderQuestion("start");
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
         }
 
         // Initialize
