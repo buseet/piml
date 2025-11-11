@@ -58,6 +58,15 @@ This matrix catalogs frameworks, libraries, codebases, and educational resources
 | SciML workshops/lectures Ben Moseley  | Course/workshop | SciML | [GitHub](https://github.com/stars/benmoseley/lists/sciml-workshops-lectures) | Beginner-Advanced |
 | DeepXDE Examples | Tutorials | 50+ PINN examples | [Docs](https://deepxde.readthedocs.io/) | Beginner |
 | Modulus Examples | Tutorials | Industry examples | [GitHub](https://github.com/NVIDIA/modulus/tree/main/examples) | Intermediate |
+| Steve Brunton PIML Series | Course Series | Comprehensive PIML  | [Youtube](https://www.youtube.com/watch?v=JoFW2uSd3Uo&t=982s) | Beginner |
+
+### Some other repos and links that doesn't fit anywhere
+ |**Resource** | **Link** | **Focus** |
+ |--------------|----------|-----------|
+ | pinns | [GitHub](https://github.com/TheodoreWolf/pinns) | example of pinns using PyTorch |
+ | Finnish Inverse Problems Society | [link](https://fips.fi/category/open-datasets/) | open tomography examoles |
+
+
 
 ### PDE Solvers (Traditional)
 
@@ -78,20 +87,6 @@ This matrix catalogs frameworks, libraries, codebases, and educational resources
 | [Plotly](https://plotly.com/) | Interactive plots | `pip install plotly` | Web dashboards |
 
 ---
-
-
-### Backend Comparison (PyTorch vs TensorFlow vs JAX)
-
-| **Aspect** | **PyTorch** | **TensorFlow** | **JAX** |
-|------------|-------------|----------------|---------|
-| **Ease of Learning** | High (Pythonic) | Medium (more complex API) | Medium (functional style) |
-| **Debugging** | Easy (eager execution) | Harder (graph-based) | Medium (JIT compilation) |
-| **Performance** | Good | Good | Excellent (XLA) |
-| **Autodiff** | Easy | Easy | Most flexible |
-| **GPU/TPU** | Great GPU | Good both | Excellent both |
-| **PIML Ecosystem** | Largest | Medium | Growing fast |
-| **Best For** | Research, flexibility | Production (legacy) | High-performance research |
-
 
 ## Detailed Tool Descriptions
 
